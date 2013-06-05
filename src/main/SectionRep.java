@@ -17,11 +17,11 @@ public class SectionRep extends SugarTreatment{
 	ArrayList<String> r;			//array with the residues of the rep part
 	ArrayList<String> l;			//array with the linkages of the rep part
 	String rep_input;				//String : all the rep part		
-	boolean nochange;
-	boolean cont;
+	boolean nochange;				//when the rep section is not changed
+	boolean cont;					//when the digestion continue after or not
 	boolean changeInRep;
 	String allRep;
-	String rep;						//the treating repetition : r1 or r2...
+	String rep;						//the treated repetition : r1 or r2...
 	String title;					//the title of the rep : REP1:12o(1+2)10d:7-12
 	String numbofrep;				//the number of repetition : 7-12
 	public String sugar;			//String : all the glycan
@@ -54,6 +54,7 @@ public class SectionRep extends SugarTreatment{
 
 	//* CLASS FUNCTIONS
 	public boolean treat2Link(String link, String enzy){
+		// when there are alternative linkages : |
 		boolean ok1 = false;
 		boolean ok2 = false;
 		String[] allLink = link.split("\\|");
@@ -121,6 +122,7 @@ public class SectionRep extends SugarTreatment{
 	}
 
 	public void repFormatage(){
+		//Formatting of the rep section : recreate the string rep
 		rep = "";
 		rep = rep + "REP" + title + "\nRES\n";
 		for (int j = 0; j<r.size(); j++)
@@ -177,6 +179,7 @@ public class SectionRep extends SugarTreatment{
 	}	
 
 	public boolean repTerm(String nrep){
+		// say if the repetition is terminal or not
 		boolean y = true;
 		for (int i=0; i<lmain.size(); i++){
 			if (lmain.get(i).contains(":" + nrep)){
@@ -204,7 +207,7 @@ public class SectionRep extends SugarTreatment{
 	public void changeRep(ArrayList<String> rmain, ArrayList<String> lmain, String nrep, ArrayList<String> ltable){
 		/*
 		 * IF THE REP PART CHANGES : A RESIDUE IS CUT BUT NOT ALL
-		 * les residues non coupés partent dans les résidues généraux et la section rep ne change pas
+		 * non-cleaved residues go to the main RES part and the section rep does not change
 		 */
 		//add residue
 		for (int i = 0; i<r.size(); i++)
@@ -217,7 +220,7 @@ public class SectionRep extends SugarTreatment{
 		changeInRep = true;
 	}			
 	public void treatTermRepManyRes(int i, String nrep, ArrayList<String> rtable, ArrayList<String> ltable){
-		
+		// treatment for terminal rep block when there are several residues
 		removeResidueLinkageInRep(r, l);
 		if (nochange)
 			System.out.println("TerminalRepManyRes : "+ i + ": no change ");	
@@ -232,7 +235,7 @@ public class SectionRep extends SugarTreatment{
 
 	public boolean noRep(ArrayList<String> rmain, ArrayList<String> lmain, Integer rr,  ArrayList<String> r, ArrayList<String> l){
 		/*
-		 * ALL THE RESIDUE OF THE REP PART ARE REMOVE
+		 * WHEN ALL THE RESIDUE OF THE REP PART ARE REMOVE
 		 */
 		System.out.println("NO section REP");
 		int removeR = 0;
@@ -257,6 +260,7 @@ public class SectionRep extends SugarTreatment{
 		return true;
 	}
 	public String getLinkFromRes(Integer rr){
+		// return the link bound the repeat section
 		String linkFromRes = "";
 		String resrep = "";
 		for (int i=0; i<rmain.size(); i++)
@@ -272,7 +276,11 @@ public class SectionRep extends SugarTreatment{
 	return linkFromRes;
 	}
 	public boolean linkFromResOK(Integer rr, String enzy){
+		//say if the link between rep and main res can be cleaved by enzyme
 		boolean ok = false;
+		// means that there is only one residue : the repetition of 1 monosaccharide (unicarb id = 201 with BTG)
+		if (rmain.size() == 1)
+			ok = true;
 		String linkFromRes = getLinkFromRes(rr);
 		for (int j=0; j<dico.dic_link.get(enzy).length; j++)
 			if (dico.dic_link.get(enzy)[j].contentEquals(linkFromRes))
@@ -281,7 +289,8 @@ public class SectionRep extends SugarTreatment{
 	}
 	
 	public void treatTermRepOneRes(int i, ArrayList<String> rtable, ArrayList<String> ltable, String nrep){
-		System.out.println("Terminal Rep One res");
+		// treatment for terminal rep block when there is only one residue
+		System.out.println("Terminal Rep One res" + i);
 		boolean ch = true;
 		CreateTabResTerm ctrt = new CreateTabResTerm(r, l, enz, dico);
 		ArrayList<Residue> tab_res = new ArrayList<Residue>();	
@@ -303,6 +312,7 @@ public class SectionRep extends SugarTreatment{
 						if (dico.dic_link.get(enzy)[j].contentEquals(link) && linkFromResOK(i+1, enzy)){
 							cont = noRep(rmain, lmain, i+1, r, l);		
 							ch = false;
+
 							break;
 						}
 					}
@@ -310,7 +320,8 @@ public class SectionRep extends SugarTreatment{
 			}
 		}
 		if (ch){
-			changeRep(rmain,lmain, nrep, ltable);
+//			TODO a voir ici car bizarre : retest sur sequences
+//			changeRep(rmain,lmain, nrep, ltable);
 			cont = false;
 		}
 	}
@@ -327,7 +338,7 @@ public class SectionRep extends SugarTreatment{
 		System.out.println(">>>>>>>>>>>>>> TERMINAL REPETITION <<<<<<<<<<<<<<<<<<<< ");
 		for (int i=0; i<repet.size(); i++){
 			rep = "REP"+repet.get(i);		
-			String nrep = searchResRep (rtable, i+1);
+			String nrep = searchResRep(rtable, i+1);
 			if (repTerm(nrep)){
 				createArray(rep);
 				if (oneResidueFromArray(r) == 0){

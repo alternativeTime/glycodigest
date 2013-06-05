@@ -2,11 +2,6 @@ package main;
 
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import static main.UsualFunctions.*;
@@ -20,7 +15,6 @@ public class Sugar {
 		private String sugar;
 		private ArrayList<String> enz;
 		private Hashtable<String, Integer> section = new Hashtable <String, Integer> ();
-		private ArrayList<String> app;
 		private EnzymeMapping dico;
 		private String rep;
 		private String allpoly;
@@ -43,7 +37,6 @@ public class Sugar {
 		public void initSugar(){
 			dico = new EnzymeMapping();
 			initDico(dico);
-			app = new ArrayList<String>();
 			glycanInput = new ArrayList<String>();
 			glycanOutput = new ArrayList<String>();
 			sugar = "";
@@ -107,53 +100,7 @@ public class Sugar {
 			if (sugar.contains("UND\n"))
 				section.put("UND", 1);
 		}
-		public String dbReferencing(String gly){
-			/*
-			 * SEARCH IN A LOCAL DATABASE IF THE GLYCAN EXISTS AND IF YES : ADD THE UNICARB ID
-			 * from 'app' : array with all possible polysaccharides
-			 * to 'allpoly' : string containing all 'app'
-			 */
-			//TODO zz-avoir de vrais identifiants de la VRAIE bdd... plus tard quand le programme sera fini
-			String temp = "";
-			String ident;
-			try {
-				Class.forName("org.postgresql.Driver");
-				System.out.println("Class.forName(org.postgresql.Driver); : Driver loaded!");
-			} 
-			catch (ClassNotFoundException e) {
-				System.err.println(e.getMessage());
-				temp = gly;
-			}
 
-			String db = "UniCarbdb";
-			String user = "postgres";
-			String password = "1234";
-				
-			String url = "jdbc:postgresql://localhost/"+db+"?user="+user+"&password="+password;
-			try {
-				Connection conn = DriverManager.getConnection(url);
-				ident = "";
-				String querySelect = "SELECT \"glycan_sequence_id\" from core.\"glycan_sequence\" where sequence_ct = \'" + gly + "\';";
-				Statement st_Select = conn.createStatement();
-				ResultSet rs = st_Select.executeQuery(querySelect);
-				while (rs.next()) {
-					ident = rs.getString(1);	
-				}
-				rs.close();
-				st_Select.close();	
-				if (ident.isEmpty())
-					temp = temp + "No Unicarb id\n"+ gly + "\n";
-				else
-					temp = temp + "Unicarb id : " + ident + "\n" + gly + "\n";
-			} 
-			catch (SQLException e){
-				System.err.println(e.getMessage());
-			}
-			catch (Exception ex){
-				System.err.println(ex.getMessage());
-			}
-			return temp;
-		}
 
 //FUNCTION FOR REPETITION SECTION
 		public void treat_non_terminal_rep(SugarTreatment ts, ArrayList<String> enz1){
@@ -184,7 +131,6 @@ public class Sugar {
 			//caution : sometimes, there a change (remove 1 repetition but the numb is unknown...)
 			allpoly = allpoly + "\n" + glycan + "\n" ;
 			glycanOutput.add(glycan);
-			app.clear();
 			enz1.clear();
 		}
 	

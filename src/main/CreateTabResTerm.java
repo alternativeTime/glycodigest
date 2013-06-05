@@ -110,12 +110,13 @@ public class CreateTabResTerm {
 
 				if (reg_res.matches(a[0], r.get(i))){
 					res.add(pa);
+					System.out.println("res : " + res);
 					ok = verifLinkSubstituent(r,l,res,pa, a, enzy);
+					System.out.println("ok : " + ok);
 				}
 				if (pa != null && ok)
 					tab_res.add(new Residue(res,enzy));
 			}
-
 		}
 	}
 
