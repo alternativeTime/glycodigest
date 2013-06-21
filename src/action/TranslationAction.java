@@ -46,9 +46,10 @@ public class TranslationAction extends MouseAdapter{
 	@Override
 	public void mouseClicked(MouseEvent e){
 			translate_iupac_to_ct();
-			String text = "Caution : the translation between Iupac and GlycoCT format can perturb \nthe enzyme simulation because of a lack " +
-					"of information in Iupac format.\nThe translation into GlycoCT will appear below the IUPAC sequence.\n" +
-					"The structure display often fails when input is in iupac.";
+			String text = "Translation from IUPAC to GlycoCT done";
+//			String text = "Caution : the translation between Iupac and GlycoCT format can perturb \nthe enzyme simulation because of a lack " +
+//					"of information in Iupac format.\nThe translation into GlycoCT will appear below the IUPAC sequence.\n" +
+//					"The structure display often fails when input is in iupac.";
 			JOptionPane.showMessageDialog(jp,  text, "Information", JOptionPane.WARNING_MESSAGE);
 		}
 

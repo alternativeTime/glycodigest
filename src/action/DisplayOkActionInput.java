@@ -33,7 +33,6 @@ public class DisplayOkActionInput extends AbstractAction {
 	
 	public DisplayOkActionInput (JTextArea area, JComboBox<String> combo, HashMap<String,String> glycanInBox, HashMap<String,String> glycanAndId){
 		this.area = area;
-//		this.applet = applet;
 		this.combo = combo;
 		name = new ArrayList<String>();
 		this.glycanInBox = glycanInBox;

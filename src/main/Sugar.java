@@ -169,11 +169,11 @@ public class Sugar {
 							System.out.println(" \n------------------enz1 : " + enz1 + "\nsugar : \n" + sugar );
 							int oneres = oneResidueFromString(sugar, 1);
 							System.out.println("oneres : " + oneres);
-							if (oneres != 1){
+//							if (oneres != 1){
 								if (section.get("REP") == 1)
 									treat_non_terminal_rep(sugtreat, enz1);	
 								glycan = sugtreat.glycanSubTreatment();
-							}
+//							}
 							e++;
 							
 							glycanFormatage(enz1);
